@@ -9,3 +9,10 @@ foreach(int num in evenNumbers)
 {
     Console.WriteLine("{0,1} ", num);
 }
+
+var animals = new List<string> {"Deer", "Sheep", "Cat", "Dog", "Bull", "Donkey", "Goat"};
+
+foreach(string animal in animals.OrderBy(animal => animal))
+{
+    Console.WriteLine(animal);
+}
