@@ -1,43 +1,103 @@
-﻿//1. Data source
-using System.Runtime.Intrinsics.X86;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-var numbers = new List<int> {0, 1, 2, 3,4,5,6 };
-
-//2. Query creation
-var evenNumbers = numbers.Where(num => num % 2 == 0);
-
-//3. Query execution
-foreach(int num in evenNumbers)
+// STEP 1: Create the buildings
+List<Building> buildings = new List<Building>()
 {
-    Console.WriteLine("{0,1} ", num);
+    new Building { Name = "Sunrise Apartments", Size = 100, TaxPerSize = 5m },
+    new Building { Name = "Green Villa", Size = 200, TaxPerSize = 8m },
+    new Building { Name = "City Tower", Size = 300, TaxPerSize = 10m },
+    new Building { Name = "Lake House", Size = 150, TaxPerSize = 5m },
+    new Building { Name = "Royal Mansion", Size = 400, TaxPerSize = 8m }
+};
+
+// STEP 2: SELECT
+Console.WriteLine("=== ESTIMATED TAX PER BUILDING ===");
+
+var estimatedTaxes = buildings.Select(b => new
+{
+    Name = b.Name,
+    Tax = (decimal)b.Size * b.TaxPerSize
+});
+
+foreach (var item in estimatedTaxes)
+{
+    Console.WriteLine($"{item.Name}: £{item.Tax}");
 }
 
-var animals = new List<string> {"Deer", "Sheep", "Cat", "Dog", "Bull", "Donkey", "Goat"};
+// STEP 3: SUM
+Console.WriteLine("\n=== TOTAL ESTIMATED TAX ===");
 
-foreach(string animal in animals.OrderBy(animal => animal))
+decimal totalTax = buildings.Sum(b =>
+    (decimal)b.Size * b.TaxPerSize);
+
+Console.WriteLine($"Total Tax: £{totalTax}");
+
+// STEP 4: WHERE
+Console.WriteLine("\n=== LARGE BUILDINGS ===");
+
+var largeBuildings = buildings.Where(b => b.Size > 150);
+
+foreach (var b in largeBuildings)
 {
-    Console.WriteLine(animal);
+    Console.WriteLine(b.Name);
 }
 
-//LINQ cheat sheet
-//Where()	-> Filter elements
-//Select()		-> Transform elements
-//OrderBy()		-> Sort ascending
-//OrderByDescending()		-> Sort descending
-//First()		-> Get first matching element
-//FirstOrDefault()		-> Get first or default
-//Single()		-> Require exactly one match
-//Any()		-> Check if at least one exists
-//All()		-> Check if every element matches
-//Count()		-> Count elements
-//Sum()		-> Calculate total
-//Average()		-> Calculate average
-//Max()		-> Get maximum
-//Min()		-> Get minimum
-//Take()		-> Take first N elements
-//Skip()		-> Skip first N elements
-//Distinct()		-> Remove duplicates
-//GroupBy()		-> Group elements by a key
-//ToList()		-> Convert results to a list
-//ToArray()		-> Convert results to an array
-//ToList() executes the query immediately and stores the results in a new list.
+// STEP 5: FIRSTORDEFAULT
+Console.WriteLine("\n=== FIND BUILDING ===");
+
+Building? found = buildings.FirstOrDefault(
+    b => b.Name == "City Tower");
+
+if (found != null)
+{
+    Console.WriteLine($"Found: {found.Name}");
+}
+else
+{
+    Console.WriteLine("Building not found.");
+}
+
+// STEP 6: ORDERBY
+Console.WriteLine("\n=== BUILDINGS SORTED BY SIZE ===");
+
+var sortedBuildings = buildings.OrderBy(b => b.Size);
+
+foreach (var b in sortedBuildings)
+{
+    Console.WriteLine($"{b.Name}: {b.Size} m²");
+}
+
+// STEP 7: GROUPBY
+Console.WriteLine("\n=== BUILDINGS GROUPED BY TAX RATE ===");
+
+var groupedBuildings = buildings.GroupBy(b => b.TaxPerSize);
+
+foreach (var group in groupedBuildings)
+{
+    Console.WriteLine($"Tax Rate: {group.Key}");
+
+    foreach (var b in group)
+    {
+        Console.WriteLine($" - {b.Name}");
+    }
+}
+
+// STEP 8: QUERY SYNTAX EXAMPLES
+Console.WriteLine("\n=== LINQ QUERY SYNTAX ===");
+
+var queryResult =
+    from b in buildings
+    where b.Size > 150
+    orderby b.Size
+    select new
+    {
+        b.Name,
+        b.Size
+    };
+
+foreach (var b in queryResult)
+{
+    Console.WriteLine($"{b.Name}: {b.Size} m²");
+}
